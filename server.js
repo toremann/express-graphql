@@ -2,43 +2,55 @@ const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const graphql = require('graphql')
 const { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList } = graphql
-const fakeData = require("./data.json")
+const stockData = require("./stockdata.json")
 var app = express();
 
-const UserType = new GraphQLObjectType({
-    name: "User",
+const StockType = new GraphQLObjectType({
+    name: "Stock",
     fields: () => ({
-        id: { type: BelongsToId },
-        firstName: { type: GraphQLString }
+        instrument_info: { type: Instrument_info },
+        market_info: { type: Market_info }
     })
 })
 
-const BelongsToId = new GraphQLObjectType ({
-    name: "BelongsToId",
+const Instrument_info = new GraphQLObjectType ({
+    name: "InstrumentInfo",
     fields: () => ({
-        idnumber: { type: GraphQLInt }
+        instrument_id: { type: GraphQLInt },
+        name: { type: GraphQLString },
+        long_name: { type: GraphQLString },
+        symbol: { type: GraphQLString }
     })
 })
+
+const Market_info = new GraphQLObjectType ({
+    name: "MarketInfo", 
+    fields: () => ({
+        market_id: { type: GraphQLInt }
+    })
+})
+
 
 const RootQuery = new GraphQLObjectType({
     name: "RootQuery",
     fields: {
-        getAllUsers: {
-            type: new GraphQLList(UserType),
+        getAllStocks: {
+            type: new GraphQLList(StockType),
             args: { id: { type: GraphQLInt }},
             resolve(parent, args) {
                 // DB GET ALL *, FIND etc..
-                return fakeData
+                return stockData
             }
         },
-        // getAllUsers: {
-        //     type: new GraphQLList(UserType),
-        //     args: { id: { type: GraphQLInt }},
-        //     resolve(parent, args) {
-        //         // DB GET ALL *, FIND etc..
-        //         return fakeData
-        //     }
-        // }
+        getStock: {
+            type: new GraphQLList(StockType),
+            args: { id: { type: GraphQLInt }},
+            resolve(parent, args) {
+                const stock = args.id
+                const findStock = stockData.find(StockType, { id })
+                return findStock 
+            }
+        }
     }
 })
 
@@ -51,10 +63,3 @@ app.use('/graphql', graphqlHTTP({
 
 app.listen(4000);
 console.log('Running a GraphQL API server at http://localhost:4000/graphql');
-
-
-// {
-//     getAllUsers {
-//       id { idnumber }
-//     }
-//   }
