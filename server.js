@@ -8,8 +8,15 @@ var app = express();
 const UserType = new GraphQLObjectType({
     name: "User",
     fields: () => ({
-        id: { type: GraphQLInt },
+        id: { type: BelongsToId },
         firstName: { type: GraphQLString }
+    })
+})
+
+const BelongsToId = new GraphQLObjectType ({
+    name: "BelongsToId",
+    fields: () => ({
+        idnumber: { type: GraphQLInt }
     })
 })
 
@@ -23,7 +30,15 @@ const RootQuery = new GraphQLObjectType({
                 // DB GET ALL *, FIND etc..
                 return fakeData
             }
-        }
+        },
+        // getAllUsers: {
+        //     type: new GraphQLList(UserType),
+        //     args: { id: { type: GraphQLInt }},
+        //     resolve(parent, args) {
+        //         // DB GET ALL *, FIND etc..
+        //         return fakeData
+        //     }
+        // }
     }
 })
 
@@ -36,3 +51,10 @@ app.use('/graphql', graphqlHTTP({
 
 app.listen(4000);
 console.log('Running a GraphQL API server at http://localhost:4000/graphql');
+
+
+// {
+//     getAllUsers {
+//       id { idnumber }
+//     }
+//   }
