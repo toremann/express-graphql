@@ -32,7 +32,7 @@ const Market_info = new GraphQLObjectType ({
 })
 
 const loggingMiddleware = (req, res, next) => {
-    fs.appendFileSync("logs.txt","req from ip: " + req.ip + "\n")
+    fs.appendFileSync("logs.txt" , `${new Date().toLocaleString("en-GB")} req from ip: ${req.ip} \n`)
     console.log('ip:', req.ip);
     next();
   }
@@ -42,6 +42,7 @@ const RootQuery = new GraphQLObjectType({
     fields: {
         getAllStocks: {
             type: new GraphQLList(StockType),
+            description: 'Returns all stocks',
             args: { id: { type: GraphQLInt }},
             resolve(parent, args) {
                 // DB GET ALL *, FIND etc..
@@ -49,11 +50,11 @@ const RootQuery = new GraphQLObjectType({
             }
         },
         getStock: {
-            type: new GraphQLList(StockType),
-            args: { id: { type: GraphQLInt }},
+            type: new GraphQLList(Instrument_info),
+            description: 'Returns specific stock',
+            args: { symbol: { type: GraphQLString }},
             resolve(parent, args) {
-                const stock = args.id
-                const findStock = stockData.find(StockType, { id })
+                const findStock = stockData.find(Instrument_info, { symbol })
                 return findStock 
             }
         }
