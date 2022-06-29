@@ -4,6 +4,7 @@ const graphql = require('graphql')
 const { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList } = graphql
 const stockData = require("./stockdata.json")
 var app = express();
+const fs = require('fs')
 
 const StockType = new GraphQLObjectType({
     name: "Stock",
@@ -30,6 +31,11 @@ const Market_info = new GraphQLObjectType ({
     })
 })
 
+const loggingMiddleware = (req, res, next) => {
+    fs.appendFileSync("logs.txt","req from ip: " + req.ip + "\n")
+    console.log('ip:', req.ip);
+    next();
+  }
 
 const RootQuery = new GraphQLObjectType({
     name: "RootQuery",
@@ -55,7 +61,7 @@ const RootQuery = new GraphQLObjectType({
 })
 
 const schema = new GraphQLSchema({query: RootQuery})
-
+app.use(loggingMiddleware);
 app.use('/graphql', graphqlHTTP({
   schema,
   graphiql: true,
