@@ -4,3 +4,9 @@ curl -X POST \
 -H "Content-Type: application/json" \
 -d '{"query": "{ getAllStocks { instrument_info { name }} }"}' \
 http://localhost:4000/graphql
+
+###
+curl -X POST \
+-H "Content-Type: application/json" \
+-d '{"query": "{ getStock(symbol: "SALM") { name }}"}' \
+http://localhost:4000/graphql
