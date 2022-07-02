@@ -1,7 +1,7 @@
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const graphql = require('graphql')
-const { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList } = graphql
+const { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList, GraphQLID } = graphql
 const stockData = require("./stockdata.json")
 var app = express();
 const fs = require('fs')
@@ -45,7 +45,6 @@ const RootQuery = new GraphQLObjectType({
         getAllStocks: {
             type: new GraphQLList(StockType),
             description: 'Returns all stocks',
-            args: { id: { type: GraphQLInt }},
             resolve(parent, args) {
                 // DB GET ALL *, FIND etc..
                 return stockData
@@ -54,9 +53,11 @@ const RootQuery = new GraphQLObjectType({
         getStock: {
             type: new GraphQLList(Instrument_info),
             description: 'Returns specific stock',
-            args: { instrument_id: { type: GraphQLInt }},
+            args: { id: { type: GraphQLInt }},
             resolve(parent, args) {
-                return _.find(Instrument_info, { id: args.instrument_id })
+                // const findStock = stockData.find(stock => stock.instrument_info.instrument_id === args.id)
+                const findStock = stockData.find(Instrument_info, args.id)
+                return _(findStock)
             }
         }
     }
