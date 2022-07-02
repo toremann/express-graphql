@@ -5,6 +5,7 @@ const { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList
 const stockData = require("./stockdata.json")
 var app = express();
 const fs = require('fs')
+const _ = require('lodash');
 
 const StockType = new GraphQLObjectType({
     name: "Stock",
@@ -31,11 +32,12 @@ const Market_info = new GraphQLObjectType ({
     })
 })
 
-const loggingMiddleware = (req, res, next) => {
-    fs.appendFileSync("logs.txt" , `${new Date().toLocaleString("en-GB")} req from ip: ${req.ip} \n`)
-    console.log('ip:', req.ip);
-    next();
-  }
+// Uncomment for logging
+// const loggingMiddleware = (req, res, next) => {
+//     fs.appendFileSync("logs.txt" , `${new Date().toLocaleString("en-GB")} req from ip: ${req.ip} \n`)
+//     console.log('ip:', req.ip);
+//     next();
+//   }
 
 const RootQuery = new GraphQLObjectType({
     name: "RootQuery",
@@ -52,17 +54,18 @@ const RootQuery = new GraphQLObjectType({
         getStock: {
             type: new GraphQLList(Instrument_info),
             description: 'Returns specific stock',
-            args: { symbol: { type: GraphQLString }},
+            args: { instrument_id: { type: GraphQLInt }},
             resolve(parent, args) {
-                const findStock = stockData.find(Instrument_info, { symbol })
-                return findStock 
+                return _.find(Instrument_info, { id: args.instrument_id })
             }
         }
     }
 })
 
 const schema = new GraphQLSchema({query: RootQuery})
-app.use(loggingMiddleware);
+// Uncomment for logging
+// app.use(loggingMiddleware);
+
 app.use('/graphql', graphqlHTTP({
   schema,
   graphiql: true,
