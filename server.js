@@ -5,7 +5,6 @@ const { GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLString, GraphQLList
 const stockData = require("./stockdata.json")
 var app = express();
 const fs = require('fs')
-const _ = require('lodash');
 
 const StockType = new GraphQLObjectType({
     name: "Stock",
@@ -55,9 +54,9 @@ const RootQuery = new GraphQLObjectType({
             description: 'Returns specific stock',
             args: { id: { type: GraphQLInt }},
             resolve(parent, args) {
-                // const findStock = stockData.find(stock => stock.instrument_info.instrument_id === args.id)
-                const findStock = stockData.find(Instrument_info, args.id)
-                return _(findStock)
+                const findStock = stockData.find(stock => stock.instrument_info.instrument_id === args.id)
+                // const findStock = stockData.find(Instrument_info, args.id)
+                return findStock
             }
         }
     }
